@@ -3,8 +3,15 @@ import { Product } from "../model/Product.js";
 
 
 export const createProduct =async (req, res) => {
+
+
+
     try {
-        const { name, price, details } = req.body
+        const { profile,name, price, details } = req.body
+mongoose.connection.collection("product").insertOne({...req.body,profile:req.file?.filename})
+res.json({message:"uploaded"})
+        
+       
 
         
      
@@ -28,6 +35,7 @@ export const createProduct =async (req, res) => {
         
 
         const newProduct = new Product({
+            profile:profile,
             name:name,
             details:details,
             price:price
@@ -73,7 +81,7 @@ export const deleteProductById = async (req, res) => {
             return res.status(400).json({ message: "error while deleting!" });
         }
     
-        await Product.findOneAndDelete(req.params.id)
+        await Product.findByIdAndDelete(req.params.id)
             return res.status(200).json({ message: "deleted" });
         
     } catch (error) {

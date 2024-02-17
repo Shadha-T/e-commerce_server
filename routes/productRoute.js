@@ -7,6 +7,7 @@ import {
     getProducts,
     updateProductById
 } from "../controller/productController.js";
+import mongoose from "mongoose";
 
 
 const router = Router();
@@ -21,9 +22,17 @@ const storage = multer.diskStorage({
     }
 })
 
-const upload = multer({ storage: storage })
 
-router.post('/',createProduct)
+
+const upload = multer({ storage: storage })
+router.post('/',upload.single('profile'),(req,res)=>{
+    console.log(req.file,"image uploaded");
+
+    mongoose.connection.collection("products").insertOne({...req.body,profile:req.file?.filename})
+    res.json({message:"uploaded"})
+})
+
+// router.post('/',createProduct)
 router.get('/',getProducts)
 router.get('/:id', getProductById)
 router.put("/:id",updateProductById)
