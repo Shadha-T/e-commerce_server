@@ -7,8 +7,8 @@ const router = Router()
 
 router.post('/register', register);
 router.post('/login', login);
-router.get('/:id',verifyAdminToken, getAdmin);
-router.get('/',verifyAdminToken, getAllAdmin);
+router.get('/:id', getAdmin);
+router.get('/', getAllAdmin);
 // router.put('/:id', getAdmin);
 
 export default router;
