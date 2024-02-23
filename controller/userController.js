@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 import { User } from "../model/userModel.js";
 import Jwt  from "jsonwebtoken";
 import dotenv from "dotenv";
+import { Transaction } from "../model/Transaction.js";
 
 
-export const register = (req, res) => {
+export const register = (req, res) =>{
 
     try {
         const { fname, lname, email, password } = req.body;
@@ -84,6 +85,50 @@ export const getUser = async (req, res) => {
         }
 
         return res.status(200).json({ users: getUser, message: 'invalid email' })
+    } catch (error) {
+        return res.status(400).json({ message: error.message || 'error' })
+
+    }
+
+}
+
+
+
+export const getTransactions = async (req, res) => {
+
+    try {
+
+      
+
+        console.log(req.headers.authorization);
+        jwt.verify(req.headers.authorization, process.env.JWT_SECRET_KEY,async function(err, decoded) {
+        console.log(decoded) // bar
+
+        const getTransaction = await Transaction.aggregate([
+            {
+                $match:{userId:new mongoose.Types.ObjectId(decoded.userId) }
+            },
+            {
+                $lookup:{
+                    from:"products",
+                    localField:"productId",
+                    foreignField:"_id",
+                    as:"product"
+                }
+            }
+
+
+        ])
+
+            if(!getTransaction){
+                return res.status(400).json({message:'not transations found'})
+            }
+
+            console.log(getTransaction)
+            return res.status(200).json({data:getTransaction})
+
+        })
+
     } catch (error) {
         return res.status(400).json({ message: error.message || 'error' })
 
